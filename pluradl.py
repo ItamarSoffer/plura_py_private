@@ -3,8 +3,10 @@ import sys, os, time, shutil, re, io, certifi, plura_dl
 from plura_dl import PluraDL
 from plura_dl.utils import ExtractorError, DownloadError
 from plura_dl.scrapeutils import extract_user_credentials, Logger
+import argparse
 if sys.version_info[0] <3:
     raise Exception("Must be using Python 3")
+
 
 certpath = os.path.abspath(certifi.where())
 os.environ["SSL_CERT_FILE"] = certpath
@@ -73,17 +75,10 @@ def move_content(pdl, course_id, coursepath, completionpath):
         os.makedirs(finalpath)
         for completed_file in os.listdir(coursepath):
             final_file = os.path.join(finalpath, completed_file)
-            #  soffer addition
             if os.path.exists(final_file):
-                tmp_final_file = final_file
-                index = 1
-                while os.path.exists(tmp_final_file):
-                    tmp_final_file = final_file + "_" + str(index)
-                    index += 1
-                final_file = tmp_final_file
-                # shutil.rmtree(final_file)
+                shutil.rmtree(final_file)
             shutil.move(os.path.join(coursepath, completed_file), final_file)
-        #  shutil.rmtree(coursepath)
+        shutil.rmtree(coursepath)
     except PermissionError:
         print("Directory still in use, leaving it. Will be fixed in future releases.")
 
@@ -114,8 +109,9 @@ def invoke_download(course_id, course_url, coursepath):
             # Handling the case of invalid download requests
             pdl.to_stdout("The course '" + course_id + "' may not be a part of your current licence.")
             pdl.to_stdout("Visit " + course_url + " for more information.\n")
-            # Moving content to _failed destination 
-            move_content(pdl, course_id, coursepath, FAILPATH)
+            # Moving content to _failed destination
+            # STOP MOVING AFTER ERRORS
+            # move_content(pdl, course_id, coursepath, FAILPATH)
             return True
         
         except DownloadError:
@@ -125,14 +121,16 @@ def invoke_download(course_id, course_url, coursepath):
             pdl.to_stdout("Double check that " + course_url)
             pdl.to_stdout("exists or that your subscription is valid for accessing its content.\n")
             # Moving content to _failed destination path
-            move_content(pdl, course_id, coursepath, FAILPATH)
+            # STOP MOVING AFTER ERRORS
+            # move_content(pdl, course_id, coursepath, FAILPATH)
             return True
 
         except KeyboardInterrupt:
             # Handling the case of user interruption
             pdl.to_stdout("\n\nThe download stream for '" + course_id + "' was canceled by user.")
-            # Moving content to _canceled destination 
-            move_content(pdl, course_id, coursepath, INTERRUPTPATH)
+            # Moving content to _canceled destination
+            # STOP MOVING AFTER ERRORS
+            # move_content(pdl, course_id, coursepath, INTERRUPTPATH)
             return False
 
 
@@ -220,7 +218,7 @@ def get_courses(scriptpath):
 
         return course_id, digits
     # courses textfile prelocated inside script directory
-    filelist = "courselist.txt"
+    filelist = COURSELIST_FILE
     
     # Loops the list's lines and stores it as a python list
     filepath = os.path.join(scriptpath,filelist)
@@ -275,6 +273,14 @@ def download_courses(courses):
             break
 
 
+def handle_arguments():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-u', '--username', help='pluralsight username')
+    parser.add_argument('-p', '--password', help='pluralsight password')
+    parser.add_argument('-c', '--courselist', help='courselise file')
+    return parser.parse_args()
+
+
 def main():
     """Main execution
     Using command line to store username and password, loops
@@ -282,7 +288,12 @@ def main():
     """
     global DLPATH, USERNAME, PASSWORD
     global INPROGRESSPATH, FINISHPATH, FAILPATH, INTERRUPTPATH
-    USERNAME, PASSWORD = extract_user_credentials()
+    global COURSELIST_FILE
+    args = handle_arguments()
+    USERNAME = args.username
+    PASSWORD = args.password
+    COURSELIST_FILE = args.courselist
+    # USERNAME, PASSWORD = extract_user_credentials()
     print("Setting username to:", USERNAME)
 
     set_subtitle()
@@ -296,11 +307,11 @@ def main():
     scriptpath = os.path.dirname(os.path.abspath(sys.argv[0]))
     
     # Download directory paths
-    DLPATH = os.path.join(scriptpath,"courses")
-    INPROGRESSPATH = os.path.join(DLPATH,"_inprogress")
-    FINISHPATH = os.path.join(DLPATH,"_finished")
-    INTERRUPTPATH = os.path.join(DLPATH,"_canceled")
-    FAILPATH = os.path.join(DLPATH,"_failed")
+    DLPATH = os.path.join(scriptpath, "courses")
+    INPROGRESSPATH = os.path.join(DLPATH, "_inprogress")
+    FINISHPATH = os.path.join(DLPATH, "_finished")
+    INTERRUPTPATH = os.path.join(DLPATH, "_canceled")
+    FAILPATH = os.path.join(DLPATH, "_failed")
     set_directory(DLPATH)
 
     # Looping through the courses determined by get_courses() invoking download requests
