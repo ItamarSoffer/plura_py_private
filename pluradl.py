@@ -59,7 +59,7 @@ def set_playlist_options(digits):
 
 def move_content(pdl, course_id, coursepath, completionpath):
     """Moves course content to its completion path.
-    
+
     Arguments:
         pdl {PluraDL} -- PluraDL object
         course_id {str} -- [description]
@@ -73,10 +73,17 @@ def move_content(pdl, course_id, coursepath, completionpath):
         os.makedirs(finalpath)
         for completed_file in os.listdir(coursepath):
             final_file = os.path.join(finalpath, completed_file)
+            #  soffer addition
             if os.path.exists(final_file):
-                shutil.rmtree(final_file)
+                tmp_final_file = final_file
+                index = 1
+                while os.path.exists(tmp_final_file):
+                    tmp_final_file = final_file + "_" + str(index)
+                    index += 1
+                final_file = tmp_final_file
+                # shutil.rmtree(final_file)
             shutil.move(os.path.join(coursepath, completed_file), final_file)
-        shutil.rmtree(coursepath)
+        #  shutil.rmtree(coursepath)
     except PermissionError:
         print("Directory still in use, leaving it. Will be fixed in future releases.")
 
