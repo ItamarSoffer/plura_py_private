@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 import os, json, re, sys, codecs, getpass
 from sys import stdout as out
 from time import time, sleep
+from datetime import datetime
 from pathlib import Path
 if os.name == 'nt':
     clear = lambda: os.system('cls')
@@ -17,25 +18,29 @@ else:
 
 class Logger(object):
     """Handling logging mechanism of PluraDL.
-    
+
     Arguments:
         logpath {str} -- Path to logfile
     """
-    def __init__(self,logpath):
+
+    def __init__(self, logpath):
         self.logpath = logpath
         with open(self.logpath, 'wt') as f: f.close
 
     def debug(self, msg):
+        msg = datetime.today().strftime("%Y-%m-%d %H:%M:%S") + " | " + msg
         print(msg)
-        with open(self.logpath, 'at') as f: f.write(msg+'\n')
+        with open(self.logpath, 'at') as f: f.write(msg + '\n')
 
     def warning(self, msg):
+        msg = datetime.today().strftime("%Y-%m-%d %H:%M:%S") + " | " + msg
         print(msg)
-        with open(self.logpath, 'at') as f: f.write(msg+'\n')
+        with open(self.logpath, 'at') as f: f.write(msg + '\n')
 
     def error(self, msg):
+        msg = datetime.today().strftime("%Y-%m-%d %H:%M:%S") + " | " + msg
         print(msg)
-        with open(self.logpath, 'at') as f: f.write(msg+'\n')
+        with open(self.logpath, 'at') as f: f.write(msg + '\n')
 
 
 def extract_user_credentials():
