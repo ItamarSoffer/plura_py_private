@@ -1,0 +1,1 @@
+python pluradl.py  --username "blacklizard789@gmail.com" --password "!Q2w3e4r" --courselist "courselist.txt"

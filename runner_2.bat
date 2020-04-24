@@ -1,1 +1,1 @@
-python pluradl_2.py  --user "tomerlozo6161@gmail.com" --pass "Fkcajur2"
+python pluradl.py  --username "tomerlozo6161@gmail.com" --password "Fkcajur2" --courselist "courselist_2.txt"

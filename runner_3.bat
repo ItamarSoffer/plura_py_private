@@ -1,1 +1,1 @@
-python pluradl_3.py  --user "whiteredbluebird@gmail.com" --pass "Fkcajur3" 
+python pluradl.py  --username "whiteredbluebird@gmail.com" --password "Fkcajur3" --courselist "courselist_3.txt"
