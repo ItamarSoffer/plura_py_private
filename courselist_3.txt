@@ -1,0 +1,16 @@
+building-machine-learning-solution
+preparing-data-machine-learning
+designing-machine-learning-model
+creating-machine-learning-models
+deploying-machine-learning-solutions
+tensorflow-getting-started
+tensorflow-understanding-foundations
+tensorflow-building-regression-models
+tensorflow-building-classification-models
+tensorflow-building-unsupervised-learning-models
+tensorflow-programs-debugging-monitoring
+tensorflow-aws-azure-gcp-deploying-models
+tensorflow-language-modeling-recurrent-neural-networks
+tensorflow-image-recognition
+tensorflow-implementing-predictive-analytics
+tensorflow-sentiment-analysis-recurrent-neural-networks

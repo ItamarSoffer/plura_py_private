@@ -1,0 +1,1 @@
+python pluradl_3.py  --user "whiteredbluebird@gmail.com" --pass "Fkcajur3" 

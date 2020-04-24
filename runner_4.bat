@@ -1,0 +1,1 @@
+python pluradl.py  --username "greenlizard6789@gmail.com" --pass "!Q2w3e4r" --courselist "courselist_4.txt"

@@ -1,0 +1,1 @@
+python pluradl_2.py  --user "tomerlozo6161@gmail.com" --pass "Fkcajur2"
