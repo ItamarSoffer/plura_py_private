@@ -12,8 +12,8 @@ certpath = os.path.abspath(certifi.where())
 os.environ["SSL_CERT_FILE"] = certpath
 
 # IMPORTANT SETTINGS TO PREVENT SPAM BLOCKING OF YOUR ACCOUNT/IP AT PLURALSIGHT # # # # # # # # # #
-SLEEP_INTERVAL = 100    # minimum sleep time (s)                   #                                  #
-SLEEP_OFFSET   = 100    # set random sleep time (s) up to          #  Change this at your own risk.   #
+SLEEP_INTERVAL = 100 #100    # minimum sleep time (s)                   #                                  #
+SLEEP_OFFSET   = 60 # 100    # set random sleep time (s) up to          #  Change this at your own risk.   #
 SLEEP_PLAYLIST = 100    # sleep time (s) between playlist requests #                                  #
 RATE_LIMIT     = 500    # download rate (kb/s)                     #                                  #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
