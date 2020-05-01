@@ -1,1 +1,4 @@
 droidcon-nyc-19-life-changing-magic-kotlin-multiplatform-serialization0
+machine-learning-algorithms
+beautiful-cplusplus-stl-algorithms
+python-data-analysts

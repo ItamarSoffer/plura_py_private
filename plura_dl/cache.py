@@ -20,25 +20,23 @@ class Cache(object):
         self._pdl = ydl
 
     def _get_root_dir(self):
-        res = self._pdl.params.get('cachedir')
+        res = self._pdl.params.get("cachedir")
         if res is None:
-            cache_root = compat_getenv('XDG_CACHE_HOME', '~/.cache')
-            res = os.path.join(cache_root, 'plura-dl')
+            cache_root = compat_getenv("XDG_CACHE_HOME", "~/.cache")
+            res = os.path.join(cache_root, "plura-dl")
         return expand_path(res)
 
     def _get_cache_fn(self, section, key, dtype):
-        assert re.match(r'^[a-zA-Z0-9_.-]+$', section), \
-            'invalid section %r' % section
-        assert re.match(r'^[a-zA-Z0-9_.-]+$', key), 'invalid key %r' % key
-        return os.path.join(
-            self._get_root_dir(), section, '%s.%s' % (key, dtype))
+        assert re.match(r"^[a-zA-Z0-9_.-]+$", section), "invalid section %r" % section
+        assert re.match(r"^[a-zA-Z0-9_.-]+$", key), "invalid key %r" % key
+        return os.path.join(self._get_root_dir(), section, "%s.%s" % (key, dtype))
 
     @property
     def enabled(self):
-        return self._pdl.params.get('cachedir') is not False
+        return self._pdl.params.get("cachedir") is not False
 
-    def store(self, section, key, data, dtype='json'):
-        assert dtype in ('json',)
+    def store(self, section, key, data, dtype="json"):
+        assert dtype in ("json",)
 
         if not self.enabled:
             return
@@ -53,11 +51,10 @@ class Cache(object):
             write_json_file(data, fn)
         except Exception:
             tb = traceback.format_exc()
-            self._pdl.report_warning(
-                'Writing cache to %r failed: %s' % (fn, tb))
+            self._pdl.report_warning("Writing cache to %r failed: %s" % (fn, tb))
 
-    def load(self, section, key, dtype='json', default=None):
-        assert dtype in ('json',)
+    def load(self, section, key, dtype="json", default=None):
+        assert dtype in ("json",)
 
         if not self.enabled:
             return default
@@ -65,7 +62,7 @@ class Cache(object):
         cache_fn = self._get_cache_fn(section, key, dtype)
         try:
             try:
-                with io.open(cache_fn, 'r', encoding='utf-8') as cachef:
+                with io.open(cache_fn, "r", encoding="utf-8") as cachef:
                     return json.load(cachef)
             except ValueError:
                 try:
@@ -73,7 +70,8 @@ class Cache(object):
                 except (OSError, IOError) as oe:
                     file_size = str(oe)
                 self._pdl.report_warning(
-                    'Cache retrieval from %s failed (%s)' % (cache_fn, file_size))
+                    "Cache retrieval from %s failed (%s)" % (cache_fn, file_size)
+                )
         except IOError:
             pass  # No cache available
 
@@ -81,16 +79,20 @@ class Cache(object):
 
     def remove(self):
         if not self.enabled:
-            self._pdl.to_screen('Cache is disabled (Did you combine --no-cache-dir and --rm-cache-dir?)')
+            self._pdl.to_screen(
+                "Cache is disabled (Did you combine --no-cache-dir and --rm-cache-dir?)"
+            )
             return
 
         cachedir = self._get_root_dir()
-        if not any((term in cachedir) for term in ('cache', 'tmp')):
-            raise Exception('Not removing directory %s - this does not look like a cache dir' % cachedir)
+        if not any((term in cachedir) for term in ("cache", "tmp")):
+            raise Exception(
+                "Not removing directory %s - this does not look like a cache dir"
+                % cachedir
+            )
 
-        self._pdl.to_screen(
-            'Removing cache dir %s .' % cachedir, skip_eol=True)
+        self._pdl.to_screen("Removing cache dir %s ." % cachedir, skip_eol=True)
         if os.path.exists(cachedir):
-            self._pdl.to_screen('.', skip_eol=True)
+            self._pdl.to_screen(".", skip_eol=True)
             shutil.rmtree(cachedir)
-        self._pdl.to_screen('.')
+        self._pdl.to_screen(".")

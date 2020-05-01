@@ -4,10 +4,10 @@ _LAZY_LOADER = False
 from .extractors import *
 
 _ALL_CLASSES = [
-        klass
-        for name, klass in globals().items()
-        if name.endswith('IE') and name != 'GenericIE'
-        ]
+    klass
+    for name, klass in globals().items()
+    if name.endswith("IE") and name != "GenericIE"
+]
 
 
 def gen_extractor_classes():
@@ -32,9 +32,10 @@ def list_extractors(age_limit):
 
     return sorted(
         filter(lambda ie: ie.is_suitable(age_limit), gen_extractors()),
-        key=lambda ie: ie.IE_NAME.lower())
+        key=lambda ie: ie.IE_NAME.lower(),
+    )
 
 
 def get_info_extractor(ie_name):
     """Returns the info extractor class with the given ie_name"""
-    return globals()[ie_name + 'IE']
+    return globals()[ie_name + "IE"]

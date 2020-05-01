@@ -20,9 +20,9 @@ def set_headless_firefox_driver():
     firefox_options.add_argument("--headless")
     firefox_options.add_argument("--window-size=640x360")
     firefox_options.add_argument("--disable-notifications")
-    firefox_options.add_argument('--no-sandbox')
-    firefox_options.add_argument('--disable-gpu')
-    firefox_options.add_argument('--disable-software-rasterizer')
+    firefox_options.add_argument("--no-sandbox")
+    firefox_options.add_argument("--disable-gpu")
+    firefox_options.add_argument("--disable-software-rasterizer")
     driver = webdriver.Firefox(options=firefox_options)
     return driver
 
@@ -36,27 +36,33 @@ def set_chrome_driver(DLPATH):
     chrome_options = ChromeOptions()
     chrome_options.add_argument("--window-size=640x360")
     chrome_options.add_argument("--disable-notifications")
-    chrome_options.add_argument('--no-sandbox')
-    chrome_options.add_experimental_option("prefs", {
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_experimental_option(
+        "prefs",
+        {
             "download.default_directory": DLPATH,
             "download.prompt_for_download": False,
             "download.directory_upgrade": True,
             "safebrowsing_for_trusted_sources_enabled": False,
-            "safebrowsing.enabled": False
-    })
-    chrome_options.add_argument('--disable-gpu')
-    chrome_options.add_argument('--disable-software-rasterizer')
+            "safebrowsing.enabled": False,
+        },
+    )
+    chrome_options.add_argument("--disable-gpu")
+    chrome_options.add_argument("--disable-software-rasterizer")
     driver = webdriver.Chrome(options=chrome_options)
     return driver
 
 
 def get_courselist_source(SEARCH_URL, n_pages=500, finish_rounds=100):
-    RESULT_BUTTON=r'//*[@id="search-results-section-load-more"]'
+    RESULT_BUTTON = r'//*[@id="search-results-section-load-more"]'
     LOAD_MORE_RESULTS = r'jQuery(".button--secondary").click()'
-    out.write("Loading the web driver ... "); out.flush()
+    out.write("Loading the web driver ... ")
+    out.flush()
     driver = set_headless_firefox_driver()
-    out.write("Done. \n"); out.flush()
-    out.write("Loading searchpage ... "); out.flush()
+    out.write("Done. \n")
+    out.flush()
+    out.write("Loading searchpage ... ")
+    out.flush()
     driver.get(SEARCH_URL)
     for i in range(n_pages):
         try:
@@ -67,10 +73,12 @@ def get_courselist_source(SEARCH_URL, n_pages=500, finish_rounds=100):
                 msg_part2 = "                  "
                 msg_part3 = "0%[.................................................]100%"
                 msg_part4 = "\nScanning courses:   [."
-                msg       = msg_part1+msg_part2+msg_part3+msg_part4
-                out.write(msg); out.flush()
-            elif i%8 == 0:
-                out.write('.'); out.flush()
+                msg = msg_part1 + msg_part2 + msg_part3 + msg_part4
+                out.write(msg)
+                out.flush()
+            elif i % 8 == 0:
+                out.write(".")
+                out.flush()
         except TimeoutException:
             msg = "]\nNo more courses could be found."
             out.write(msg)
@@ -78,13 +86,15 @@ def get_courselist_source(SEARCH_URL, n_pages=500, finish_rounds=100):
     out.write(" Scanning done.\nFinalizing result data .")
     for i in range(finish_rounds):
         driver.execute_script(LOAD_MORE_RESULTS)
-        if i%10 == 0:
-            out.write('.'); out.flush()
-    out.write(' Done.\n')
+        if i % 10 == 0:
+            out.write(".")
+            out.flush()
+    out.write(" Done.\n")
     output_html = driver.page_source
-    out.write('Closing web driver ... '); out.flush()
+    out.write("Closing web driver ... ")
+    out.flush()
     driver.close()
-    out.write('Done.\n')
+    out.write("Done.\n")
     return output_html
 
 
@@ -102,7 +112,8 @@ def wait_for_access(driver, XPATH, timer=10):
         [WebDriver element] -- Element in interest
     """
     element = WebDriverWait(driver, timer).until(
-    EC.element_to_be_clickable((By.XPATH, XPATH)))
+        EC.element_to_be_clickable((By.XPATH, XPATH))
+    )
     return element
 
 
@@ -111,28 +122,29 @@ def wait_for_access(driver, XPATH, timer=10):
 
 
 def get_length(length_text):
-    hours=None; minutes=None
+    hours = None
+    minutes = None
     if length_text:
-        hours_search = re.search(r'[0-9]+(?=h)', length_text)
-        minutes_search = re.search(r'[0-9]+(?=m)', length_text)
+        hours_search = re.search(r"[0-9]+(?=h)", length_text)
+        minutes_search = re.search(r"[0-9]+(?=m)", length_text)
         if hours_search:
             hours = int(hours_search.group())
         if minutes_search:
             minutes = int(minutes_search.group())
     if hours and minutes:
-        time = hours*60 + minutes
+        time = hours * 60 + minutes
     elif hours:
-        time = hours*60
+        time = hours * 60
     elif minutes:
         time = minutes
     else:
-        time = 'none'
+        time = "none"
     return time
 
 
 def get_rating(rating_elem):
     if rating_elem:
-        rating = re.search(r'[0-9]+', rating_elem.get_text())
+        rating = re.search(r"[0-9]+", rating_elem.get_text())
         if rating:
             rating = int(rating.group())
         else:
@@ -154,12 +166,11 @@ def get_course_elements(course):
 
 def get_course_elements_texts(course_elements):
     title = course_elements[0].get_text()
-    url = course_elements[0].find('a').get('href')
-    courseid = url.split('/')[-1]
+    url = course_elements[0].find("a").get("href")
+    courseid = url.split("/")[-1]
     author = course_elements[1].get_text()
     level = course_elements[2].get_text()
     date = course_elements[3].get_text()
     length = get_length(course_elements[4].get_text())
     rating = get_rating(course_elements[5])
     return courseid, url, title, author, level, date, length, rating
-
