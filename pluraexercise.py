@@ -16,6 +16,7 @@ from plura_dl.scrapeutils import extract_user_credentials, Logger
 import argparse
 from random import randint
 import sys
+
 sys.path.append(r"C:\Users\itama\Downloads\chromedriver_win32")
 
 LOGIN_URL = r"https://app.pluralsight.com/id?"
@@ -204,7 +205,7 @@ def main():
         login_routine(driver, LOGIN_URL)
         for index, course in enumerate(courses_to_fetch):
             print(f"{index}: {course} - starts.")
-            download_routine(driver, course[0], sleep_time=SLEEP_TIME+SLEEP_OFFSET)
+            download_routine(driver, course[0], sleep_time=SLEEP_TIME + SLEEP_OFFSET)
             print(f"{index}: {course} - finished.")
         print("\nEnd of list reached. Downloads might still be in progress.")
         enter_hibernation()
