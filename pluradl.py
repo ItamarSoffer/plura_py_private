@@ -4,7 +4,8 @@ from plura_dl import PluraDL
 from plura_dl.utils import ExtractorError, DownloadError
 from plura_dl.scrapeutils import extract_user_credentials, Logger
 import argparse
-if sys.version_info[0] <3:
+
+if sys.version_info[0] < 3:
     raise Exception("Must be using Python 3")
 
 
@@ -12,10 +13,14 @@ certpath = os.path.abspath(certifi.where())
 os.environ["SSL_CERT_FILE"] = certpath
 
 # IMPORTANT SETTINGS TO PREVENT SPAM BLOCKING OF YOUR ACCOUNT/IP AT PLURALSIGHT # # # # # # # # # #
-SLEEP_INTERVAL = 100 #100    # minimum sleep time (s)                   #                                  #
-SLEEP_OFFSET   = 60 # 100    # set random sleep time (s) up to          #  Change this at your own risk.   #
-SLEEP_PLAYLIST = 100    # sleep time (s) between playlist requests #                                  #
-RATE_LIMIT     = 500    # download rate (kb/s)                     #                                  #
+SLEEP_INTERVAL = 100  # 100    # minimum sleep time (s)                   #                                  #
+SLEEP_OFFSET = 60  # 100    # set random sleep time (s) up to          #  Change this at your own risk.   #
+SLEEP_PLAYLIST = (
+    100  # sleep time (s) between playlist requests #                                  #
+)
+RATE_LIMIT = (
+    500  # download rate (kb/s)                     #                                  #
+)
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 # Global defaults
@@ -23,12 +28,14 @@ DLPATH, USERNAME, PASSWORD = "", "", ""
 INPROGRESSPATH, FINISHPATH, FAILPATH, INTERRUPTPATH = "", "", "", ""
 PDL_OPTS = {}
 SUBTITLE_OFF = False
-FILENAME_TEMPLATE = r"%(playlist_index)s-%(chapter_number)s-%(title)s-%(resolution)s.%(ext)s"
+FILENAME_TEMPLATE = (
+    r"%(playlist_index)s-%(chapter_number)s-%(title)s-%(resolution)s.%(ext)s"
+)
 PLURAURL = r"https://app.pluralsight.com/library/courses/"
 SCRIPTPATH = os.path.dirname(os.path.abspath(sys.argv[0]))
-COOKIEPATH = os.path.join(SCRIPTPATH, 'cookies')
-COOKIEFILE = os.path.join(COOKIEPATH, 'cookies.txt')
-RATE_LIMIT = RATE_LIMIT*10**3
+COOKIEPATH = os.path.join(SCRIPTPATH, "cookies")
+COOKIEFILE = os.path.join(COOKIEPATH, "cookies.txt")
+RATE_LIMIT = RATE_LIMIT * 10 ** 3
 if not os.path.exists(COOKIEPATH):
     os.mkdir(COOKIEPATH)
 elif os.path.exists(COOKIEFILE):
@@ -48,15 +55,20 @@ def set_playlist_options(digits):
         PDL_OPTS.pop("playliststart", None)
         PDL_OPTS.pop("playlistend", None)
     elif n == 1:
-        print("Downloading video indicies up to",digits[0],"to")
-        PDL_OPTS["playlistend"]   = digits[0]
+        print("Downloading video indicies up to", digits[0], "to")
+        PDL_OPTS["playlistend"] = digits[0]
     elif n == 2:
-        print("Downloading video indicies from",digits[0],"up to and including",digits[1])
+        print(
+            "Downloading video indicies from",
+            digits[0],
+            "up to and including",
+            digits[1],
+        )
         PDL_OPTS["playliststart"] = digits[0]
-        PDL_OPTS["playlistend"]   = digits[1]
+        PDL_OPTS["playlistend"] = digits[1]
     else:
         print("Downloading specific video indicies", digits)
-        PDL_OPTS["playlist_items"] = ','.join([str(x) for x in digits])
+        PDL_OPTS["playlist_items"] = ",".join([str(x) for x in digits])
 
 
 def move_content(pdl, course_id, coursepath, completionpath):
@@ -107,19 +119,27 @@ def invoke_download(course_id, course_url, coursepath):
 
         except ExtractorError:
             # Handling the case of invalid download requests
-            pdl.to_stdout("The course '" + course_id + "' may not be a part of your current licence.")
+            pdl.to_stdout(
+                "The course '"
+                + course_id
+                + "' may not be a part of your current licence."
+            )
             pdl.to_stdout("Visit " + course_url + " for more information.\n")
             # Moving content to _failed destination
             # STOP MOVING AFTER ERRORS
             # move_content(pdl, course_id, coursepath, FAILPATH)
             return True
-        
+
         except DownloadError:
             # Handling the the more general case of download error
             pdl.to_stdout("Something went wrong.")
-            pdl.to_stdout("The download request for '" + course_id + "' was forced to terminate.")
+            pdl.to_stdout(
+                "The download request for '" + course_id + "' was forced to terminate."
+            )
             pdl.to_stdout("Double check that " + course_url)
-            pdl.to_stdout("exists or that your subscription is valid for accessing its content.\n")
+            pdl.to_stdout(
+                "exists or that your subscription is valid for accessing its content.\n"
+            )
             # Moving content to _failed destination path
             # STOP MOVING AFTER ERRORS
             # move_content(pdl, course_id, coursepath, FAILPATH)
@@ -127,7 +147,9 @@ def invoke_download(course_id, course_url, coursepath):
 
         except KeyboardInterrupt:
             # Handling the case of user interruption
-            pdl.to_stdout("\n\nThe download stream for '" + course_id + "' was canceled by user.")
+            pdl.to_stdout(
+                "\n\nThe download stream for '" + course_id + "' was canceled by user."
+            )
             # Moving content to _canceled destination
             # STOP MOVING AFTER ERRORS
             # move_content(pdl, course_id, coursepath, INTERRUPTPATH)
@@ -152,7 +174,7 @@ def pluradl(course):
     course_url = PLURAURL + course_id
 
     # OS parameters - Setting up paths metadata
-    coursepath = os.path.join(INPROGRESSPATH,course_id)
+    coursepath = os.path.join(INPROGRESSPATH, course_id)
 
     # Invoking download if not already finished
     if not os.path.exists(os.path.join(FINISHPATH, course_id)):
@@ -162,9 +184,9 @@ def pluradl(course):
         set_directory(coursepath)
         # Setting up logging metadata
         logfile = course_id + ".log"
-        logpath = os.path.join(coursepath,logfile)
+        logpath = os.path.join(coursepath, logfile)
         PDL_OPTS["logger"] = Logger(logpath)
-        
+
         return invoke_download(course_id, course_url, coursepath)
     else:
         print("Course", course_id, "already downloaded")
@@ -175,8 +197,7 @@ def set_subtitle():
     """Determines whether subtitle parameters should be turned on or not.
     """
     global SUBTITLE_OFF
-    subtitle_flags = ("--sub", "--subtitle", "-s",
-                      "--SUB", "--SUBTITLE", "-S")
+    subtitle_flags = ("--sub", "--subtitle", "-s", "--SUB", "--SUBTITLE", "-S")
     if len(sys.argv) > 1:
         for arg in sys.argv[1:]:
             if arg in subtitle_flags:
@@ -204,29 +225,31 @@ def get_courses(scriptpath):
     Returns:
         [(str, [int])] -- List of course identifiers exposed by courselist.txt
     """
+
     def _parse_line(line):
         course_id = ""
         digits = []
 
-        input_chunks = re.findall(r'[\S]{1,}', line)
+        input_chunks = re.findall(r"[\S]{1,}", line)
         for chunk in input_chunks:
-            if re.search(r'[\D]{1,}', chunk):
+            if re.search(r"[\D]{1,}", chunk):
                 course_id = chunk
             else:
                 digits.append(int(chunk))
         digits.sort()
 
         return course_id, digits
+
     # courses textfile prelocated inside script directory
     filelist = COURSELIST_FILE
-    
+
     # Loops the list's lines and stores it as a python list
-    filepath = os.path.join(scriptpath,filelist)
+    filepath = os.path.join(scriptpath, filelist)
     courses = []
     try:
-        with open(filepath, 'r+') as file:
+        with open(filepath, "r+") as file:
             for line in file.readlines():
-                if re.search(r'\S', line):
+                if re.search(r"\S", line):
                     course_id, digits = _parse_line(line)
                     courses.append((course_id, digits))
         return courses
@@ -257,7 +280,7 @@ def download_courses(courses):
     PDL_OPTS["format"] = "bestaudio/best"
     PDL_OPTS["writesubtitles"] = True
     PDL_OPTS["allsubtitles"] = True
-    PDL_OPTS["subtitlesformat"] = r'srt'
+    PDL_OPTS["subtitlesformat"] = r"srt"
     PDL_OPTS["verbose"] = True
     if SUBTITLE_OFF:
         PDL_OPTS["writesubtitles"] = False
@@ -275,9 +298,9 @@ def download_courses(courses):
 
 def handle_arguments():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-u', '--username', help='pluralsight username')
-    parser.add_argument('-p', '--password', help='pluralsight password')
-    parser.add_argument('-c', '--courselist', help='courselise file')
+    parser.add_argument("-u", "--username", help="pluralsight username")
+    parser.add_argument("-p", "--password", help="pluralsight password")
+    parser.add_argument("-c", "--courselist", help="courselise file")
     return parser.parse_args()
 
 
@@ -301,11 +324,11 @@ def main():
         subtite_state = "off"
     else:
         subtite_state = "on"
-    print("Downloading subtitles is set to:", subtite_state, '\n')
-    
+    print("Downloading subtitles is set to:", subtite_state, "\n")
+
     # Script's absolute directory path
     scriptpath = os.path.dirname(os.path.abspath(sys.argv[0]))
-    
+
     # Download directory paths
     DLPATH = os.path.join(scriptpath, "courses")
     INPROGRESSPATH = os.path.join(DLPATH, "_inprogress")

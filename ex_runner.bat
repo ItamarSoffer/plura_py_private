@@ -1,0 +1,1 @@
+python pluraexercise.py  --username "itamar.soffer@gmail.com" --password "S0ffer2305" --courselist "all_our_courselist.txt"

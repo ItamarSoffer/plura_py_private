@@ -1,4 +1,3 @@
-ethical-hacking-understanding
 ethical-hacking-reconnaissance-footprinting
 ethical-hacking-scanning-networks
 ethical-hacking-enumeration
@@ -19,3 +18,4 @@ ethical-hacking-hacking-internet-of-things
 ethical-hacking-cloud-computing
 ethical-hacking-cryptography-ceh
 ethical-hacking-penetration-testing
+ethical-hacking-understanding
